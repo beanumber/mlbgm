@@ -2,6 +2,7 @@
 #'
 #' A data frame contains player ID mappings
 #'
+#' @docType data
 #' @format A data frame with one row for each player and 9 columns:
 #' \describe{
 #'    \item{key_person}{Ted's ID for that person}
@@ -22,6 +23,7 @@
 #'
 #' A data frame contains player ID mappings
 #'
+#' @docType data
 #' @format A data frame with one row for each player and 31 columns:
 #' \describe{
 #'    \item{nameLast}{the person's last name}
@@ -41,6 +43,7 @@
 #'
 #' A dataset containing fWAR values
 #'
+#' @docType data
 #' @format A data frame with one row for each player-season and 11 columns:
 #' \describe{
 #'    \item{playerid}{the FanGraphs id of the player}
@@ -63,7 +66,7 @@
 #' rWAR values downloaded from Baseball-Reference.com
 #'
 #' A dataset containing rWAR values
-#'
+#' @docType data
 #' @format A data frame with one row for each player-season and 15 columns:
 #' \describe{
 #'    \item{playerId}{the Lahman id of the player}
@@ -86,4 +89,16 @@
 #' @source \url{http://baseball-reference.com/}
 #'
 "rwar"
+
+#' Franchise values
+#' @docType data
+"forbes"
+
+#' MSA statistics
+#' @docType data
+"msa"
+
+#' MSA-MLB map
+#' @docType data
+"msa_mlb"
 

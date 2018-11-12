@@ -20,15 +20,16 @@ Retrieves daily rWAR figures from Baseball-Reference.com and stores it as a data
 # Get data from yesterday
 \dontrun{
 rWAR <- read_rwar()
-}
-data(rWAR)
 hist(rWAR$rWAR)
 
 # Leaders since 1954
-library(dplyr)
-modern = filter(rWAR, yearId >= 1954)
-head(arrange(modern, desc(rWAR)), 20)
+if (require(dplyr)) {
+  modern <- filter(rWAR, yearId >= 1954)
+  head(arrange(modern, desc(rWAR)), 20)
 
-# Relationship between batting and fielding
-plot(modern$rRAA_bat, modern$rRAA_field, cex=0.5)
+  # Relationship between batting and fielding
+  plot(modern$rRAA_bat, modern$rRAA_field, cex=0.5)
+}
+}
+
 }
