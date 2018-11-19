@@ -102,3 +102,7 @@
 #' @docType data
 "msa_mlb"
 
+#' Major League Service Time
+#' @docType data
+"mls"
+
