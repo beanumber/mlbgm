@@ -1,5 +1,8 @@
 #' Fetch current Vegas odds
 #' @export
+#' @examples
+#'
+#' current_probs()
 #'
 current_probs <- function() {
   url <- "http://www.vegasinsider.com/mlb/odds/futures/"
@@ -12,6 +15,18 @@ current_probs <- function() {
     dplyr::mutate(ws_vig = readr::parse_number(V2) /
                     (readr::parse_number(V1) + readr::parse_number(V2)),
                   ws_prob = ws_vig / sum(ws_vig))
+
+  # fit logistic regression
+  historical_teams <- Lahman::Teams %>%
+    filter(yearID >= 1998, W + L > 150) %>%
+    mutate(wpct = W / (W + L))
+  mod <- stats::glm(WSWin == "Y" ~ wpct, data = historical_teams, family = binomial)
+  coefs <- coef(mod)
+
   teams %>%
-    dplyr::select(Team, Odds, ws_prob)
+    dplyr::mutate(logit = gtools::logit(ws_prob),
+                  wpct_hat = (logit - coefs["(Intercept)"]) / coefs["wpct"],
+                  wpct_hat_rescale = 0.5 + wpct_hat - mean(wpct_hat),
+                  wins_pred = 162 * wpct_hat_rescale) %>%
+    dplyr::select(Team, Odds, ws_prob, wins_pred)
 }

@@ -9,3 +9,8 @@ current_probs()
 \description{
 Fetch current Vegas odds
 }
+\examples{
+
+current_probs()
+
+}
