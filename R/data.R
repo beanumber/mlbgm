@@ -104,5 +104,10 @@
 
 #' Major League Service Time
 #' @docType data
+#' @source \url{https://legacy.baseballprospectus.com/compensation/cots/}
 "mls"
 
+#' Contracts
+#' @docType data
+#' @source \url{https://www.spotrac.com/mlb/contracts/}
+"contracts"
