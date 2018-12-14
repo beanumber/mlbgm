@@ -1,6 +1,6 @@
 Package: mlbgm
 Title: tools for baseball player valuation
-Version: 0.0.0.9008
+Version: 0.0.0.9009
 Authors@R: person("Benjamin S.", "Baumer", email = "ben.baumer@gmail.com", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
 Depends: R (>= 3.0)
@@ -15,6 +15,7 @@ Imports:
   readr,
   rvest,
   stringr,
+  teamcolors,
   tibble,
   tidyr,
   xml2
