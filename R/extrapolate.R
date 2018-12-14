@@ -48,7 +48,7 @@ augment_future <- function(mod, newdata, col_name, ...) {
     dplyr::rename(effect = .fitted) %>%
     dplyr::select(-.se.fit)
 
-  newdata$temp <- newdata[, col_name] %>% as_vector()
+  newdata$temp <- newdata[, col_name] %>% purrr::as_vector()
   newdata[, col_name] <- factor(max_effect_name)
   newdata <- newdata %>%
     dplyr::mutate(y_hat_old = predict(mod, newdata = .)) %>%
