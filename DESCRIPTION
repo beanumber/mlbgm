@@ -1,19 +1,27 @@
 Package: mlbgm
 Title: tools for baseball player valuation
-Version: 0.0.0.9005
+Version: 0.0.0.9008
 Authors@R: person("Benjamin S.", "Baumer", email = "ben.baumer@gmail.com", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
 Depends: R (>= 3.0)
 Imports:
+  broom,
   downloader,
   dplyr,
+  gtools,
   Lahman,
   magrittr,
+  purrr,
   readr,
   rvest,
   stringr,
+  tibble,
+  tidyr,
   xml2
-License: GPL-3 + FILE
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
+Suggests: 
+  knitr,
+  testthat
