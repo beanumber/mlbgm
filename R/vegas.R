@@ -1,6 +1,5 @@
 #' Fetch current Vegas odds
 #' @name futures
-#' @importFrom stats glm binomial
 #' @export
 
 current_probs <- function() {
@@ -10,26 +9,44 @@ current_probs <- function() {
   teams <- x[[9]] %>%
     rvest::html_table() %>%
     dplyr::bind_cols(stringr::str_split_fixed(.$Odds, pattern = "/", n = 2) %>%
-                       as.data.frame()) %>%
+                       as_tibble()) %>%
     dplyr::mutate(ws_vig = readr::parse_number(V2) /
                     (readr::parse_number(V1) + readr::parse_number(V2)),
                   ws_prob = ws_vig / sum(ws_vig))
 
   # fit logistic regression
-  historical_teams <- Lahman::Teams %>%
-    dplyr::filter(yearID >= 1998, W + L > 150) %>%
-    dplyr::mutate(wpct = W / (W + L))
-  mod <- stats::glm(WSWin == "Y" ~ wpct, data = historical_teams, family = binomial)
-  coefs <- coef(mod)
+  mod <- glm_ws()
+  preds <- predict_wins(mod, teams$ws_prob) %>%
+    dplyr::select(wins_pred)
 
-  teams %>%
-    dplyr::mutate(logit = gtools::logit(ws_prob),
-                  wpct_hat = (logit - coefs["(Intercept)"]) / coefs["wpct"],
-                  wpct_hat_rescale = 0.5 + wpct_hat - mean(wpct_hat),
-                  wins_pred = 162 * wpct_hat_rescale) %>%
+  dplyr::bind_cols(teams, preds) %>%
     dplyr::select(Team, Odds, ws_prob, wins_pred)
 }
 
+
+#' @rdname futures
+#' @importFrom stats glm binomial
+#' @export
+
+glm_ws <- function(from = 1998, ...) {
+  historical_teams <- Lahman::Teams %>%
+    dplyr::filter(yearID >= 1998, W + L > 150) %>%
+    dplyr::mutate(wpct = W / (W + L))
+  glm(WSWin == "Y" ~ wpct, data = historical_teams, family = binomial)
+}
+
+#' @rdname futures
+#' @export
+
+predict_wins <- function(mod, probs, ...) {
+  coefs <- coef(mod)
+
+  tibble::tibble(ws_prob = probs) %>%
+    dplyr::mutate(logit = gtools::logit(ws_prob),
+                  wpct_hat = (logit - coefs["(Intercept)"]) / coefs["wpct"],
+                  wpct_hat_rescale = 0.5 + wpct_hat - mean(wpct_hat),
+                  wins_pred = 162 * wpct_hat_rescale)
+}
 
 #' @rdname futures
 #' @importFrom rvest html_nodes html_text html_children

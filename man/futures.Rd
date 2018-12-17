@@ -3,10 +3,16 @@
 \name{futures}
 \alias{futures}
 \alias{current_probs}
+\alias{glm_ws}
+\alias{predict_wins}
 \alias{read_ws_futures}
 \title{Fetch current Vegas odds}
 \usage{
 current_probs()
+
+glm_ws(from = 1998, ...)
+
+predict_wins(mod, probs, ...)
 
 read_ws_futures()
 }
