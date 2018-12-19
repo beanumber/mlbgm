@@ -49,13 +49,13 @@ predict_wins <- function(mod, probs, ...) {
 }
 
 #' @rdname futures
-#' @importFrom rvest html_nodes html_text html_children
+#' @importFrom rvest html_nodes html_text html_children html_attr
 #' @export
 
 read_ws_futures <- function() {
   url <- "https://www.oddsshark.com/mlb/odds/futures"
 
-  num_books <- 7
+  num_books <- 8
   idx <- 2:(num_books * 30 + 1)
 
   x <- xml2::read_html(url)
@@ -66,9 +66,15 @@ read_ws_futures <- function() {
     purrr::pluck(1) %>%
     readr::parse_number()
 
+  book_names <- x %>%
+    html_nodes(css = "div.op-book-header") %>%
+    html_nodes("img") %>%
+    html_attr(name = "alt")
+
   out <- y[idx] %>%
     matrix(ncol = num_books, byrow = TRUE) %>%
     tibble::as_tibble()
+  names(out) <- book_names[c(1:4, 7, 9, 11, 12)]
 
   teams <- x %>%
     html_nodes(css = "div.op-team-data-wrapper:nth-child(2)") %>%
@@ -77,9 +83,7 @@ read_ws_futures <- function() {
 
   out <- out %>%
     dplyr::mutate(team = teams[2:31]) %>%
-    tidyr::gather(key = "sportsbook", value = "futures", -team) %>%
-    dplyr::group_by(team) %>%
-    dplyr::summarize(n = n(), avg_future = mean(futures)) %>%
+    tidyr::gather(key = "sportsbook", value = "future", -team) %>%
     dplyr::mutate(timestamp = Sys.time())
 
   return(out)
