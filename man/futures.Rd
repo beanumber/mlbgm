@@ -5,7 +5,9 @@
 \alias{current_probs}
 \alias{glm_ws}
 \alias{predict_wins}
-\alias{read_ws_futures}
+\alias{read_ws_futures_oddsshark}
+\alias{read_ws_futures_actionnetwork}
+\alias{read_ws_futures_sportsline}
 \title{Fetch current Vegas odds}
 \usage{
 current_probs()
@@ -14,7 +16,11 @@ glm_ws(from = 1998, ...)
 
 predict_wins(mod, probs, ...)
 
-read_ws_futures()
+read_ws_futures_oddsshark()
+
+read_ws_futures_actionnetwork()
+
+read_ws_futures_sportsline()
 }
 \description{
 Fetch current Vegas odds

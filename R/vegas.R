@@ -52,7 +52,7 @@ predict_wins <- function(mod, probs, ...) {
 #' @importFrom rvest html_nodes html_text html_children html_attr
 #' @export
 
-read_ws_futures <- function() {
+read_ws_futures_oddsshark <- function() {
   url <- "https://www.oddsshark.com/mlb/odds/futures"
 
   num_books <- 8
@@ -87,4 +87,41 @@ read_ws_futures <- function() {
     dplyr::mutate(timestamp = Sys.time())
 
   return(out)
+}
+
+#' @rdname futures
+#' @importFrom rvest html_nodes html_table
+#' @export
+
+read_ws_futures_actionnetwork <- function() {
+  url <- "https://www.actionnetwork.com/mlb/futures"
+
+  x <- xml2::read_html(url)
+  y <- x %>%
+    html_nodes("table") %>%
+    html_table() %>%
+    purrr::pluck(1)
+  y %>%
+    mutate(sportsbook = "ActionNetwork",
+           timestamp = Sys.time()) %>%
+    select(team = Team, sportsbook, future = BetOnline, timestamp)
+}
+
+
+#' @rdname futures
+#' @importFrom rvest html_nodes html_table
+#' @export
+
+read_ws_futures_sportsline <- function() {
+  url <- "https://www.sportsline.com/mlb/futures/"
+
+  x <- xml2::read_html(url)
+  y <- x %>%
+    html_nodes("futures-table") %>%
+    html_table() %>%
+    purrr::pluck(1)
+  y %>%
+    mutate(sportsbook = "SportsLine",
+           timestamp = Sys.time()) %>%
+    select(team = Team, sportsbook, future = BetOnline, timestamp)
 }
