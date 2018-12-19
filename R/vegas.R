@@ -25,6 +25,7 @@ current_probs <- function() {
 
 
 #' @rdname futures
+#' @param from Year from which to draw historical data
 #' @importFrom stats glm binomial
 #' @export
 
@@ -36,6 +37,9 @@ glm_ws <- function(from = 1998, ...) {
 }
 
 #' @rdname futures
+#' @param mod a \code{\link[stats]{glm}} object
+#' @param probs a vector of probabilities
+#' @param ... currently ignored
 #' @export
 
 predict_wins <- function(mod, probs, ...) {

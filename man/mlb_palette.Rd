@@ -2,9 +2,12 @@
 % Please edit documentation in R/utils.R
 \name{mlb_palette}
 \alias{mlb_palette}
+\alias{mlb_lahman_palette}
 \title{MLB Team colors}
 \usage{
 mlb_palette(...)
+
+mlb_lahman_palette(...)
 }
 \arguments{
 \item{...}{arguments passed to \code{\link[teamcolors]{league_palette}}}

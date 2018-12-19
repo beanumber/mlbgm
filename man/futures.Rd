@@ -22,6 +22,15 @@ read_ws_futures_actionnetwork()
 
 read_ws_futures_sportsline()
 }
+\arguments{
+\item{from}{Year from which to draw historical data}
+
+\item{...}{currently ignored}
+
+\item{mod}{a \code{\link[stats]{glm}} object}
+
+\item{probs}{a vector of probabilities}
+}
 \description{
 Fetch current Vegas odds
 }

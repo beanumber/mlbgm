@@ -8,17 +8,41 @@ mlb_palette <- function(...) {
   teamcolors::league_palette("mlb", ...)
 }
 
-
-#' Match names
 #' @export
+#' @rdname mlb_palette
 
-lahman_teams <- function(x, ...) {
-  lahman_names <- Lahman::Teams %>%
+mlb_lahman_palette <- function(...) {
+  pal <- teamcolors::league_palette("mlb", ...) %>%
+    tibble::enframe() %>%
+    mutate(name = standardize_team_name(name))
+  lkup <- Lahman::Teams %>%
     filter(yearID == max(yearID)) %>%
     select(teamID, name) %>%
-    mutate(team = standardize_team_name(x = name))
+    mutate(name = standardize_team_name(name))
+  merged <- left_join(pal, lkup)
+  out <- merged$value
+  names(out) <- merged$teamID
+  out
 }
 
+
+
+#' Match names
+#' @import dplyr
+#' @export
+
+lahman_teams <- function() {
+  out <- Lahman::Teams %>%
+    filter(yearID == max(yearID)) %>%
+    select(teamID, name) %>%
+    mutate(team = standardize_team_name(x = name)) %>%
+    separate(col = team, into = c("city", "nickname"), sep = " ")
+  out
+}
+
+#' @rdname lahman_teams
+#' @param x character vector of team names
+#' @param ... currently ignored
 #' @export
 
 standardize_team_name <- function(x, ...) {
@@ -35,6 +59,7 @@ standardize_team_name <- function(x, ...) {
     gsub("chi ", "chicago ", .) %>%
     gsub("san ", "san-", .) %>%
     gsub(" sox", "-sox", .) %>%
+    gsub(" jays", "-jays", .) %>%
     gsub("new york", "new-york", .) %>%
     gsub("los angeles", "los-angeles", .) %>%
     gsub(" city", "-city", .) %>%

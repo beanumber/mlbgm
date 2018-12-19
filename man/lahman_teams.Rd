@@ -2,9 +2,17 @@
 % Please edit documentation in R/utils.R
 \name{lahman_teams}
 \alias{lahman_teams}
+\alias{standardize_team_name}
 \title{Match names}
 \usage{
-lahman_teams(x, ...)
+lahman_teams()
+
+standardize_team_name(x, ...)
+}
+\arguments{
+\item{x}{character vector of team names}
+
+\item{...}{currently ignored}
 }
 \description{
 Match names
