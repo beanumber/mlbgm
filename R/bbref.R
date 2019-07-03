@@ -6,7 +6,6 @@
 #'
 #' @return a data.frame consisting of rWAR
 #'
-#' @importFrom magrittr %>%
 #' @export
 #' @examples
 #'

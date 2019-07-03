@@ -10,7 +10,6 @@ Imports:
   dplyr,
   gtools,
   Lahman,
-  magrittr,
   purrr,
   readr,
   rvest,

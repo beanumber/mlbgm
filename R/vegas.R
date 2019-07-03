@@ -59,8 +59,10 @@ predict_wins <- function(mod, probs, ...) {
 read_ws_futures_oddsshark <- function() {
   url <- "https://www.oddsshark.com/mlb/odds/futures"
 
-  num_books <- 8
+  num_books <- 9
   idx <- 2:(num_books * 30 + 1)
+
+
 
   x <- xml2::read_html(url)
   y <- x %>%
@@ -78,7 +80,7 @@ read_ws_futures_oddsshark <- function() {
   out <- y[idx] %>%
     matrix(ncol = num_books, byrow = TRUE) %>%
     tibble::as_tibble()
-  names(out) <- book_names[c(1:4, 7, 9, 11, 12)]
+  names(out) <- book_names[c(1:5, 7, 9, 11, 12)]
 
   teams <- x %>%
     html_nodes(css = "div.op-team-data-wrapper:nth-child(2)") %>%
@@ -108,7 +110,7 @@ read_ws_futures_actionnetwork <- function() {
   y %>%
     mutate(sportsbook = "ActionNetwork",
            timestamp = Sys.time()) %>%
-    select(team = Team, sportsbook, future = BetOnline, timestamp)
+    select(team = Team, sportsbook, future = Odds, timestamp)
 }
 
 
@@ -121,7 +123,7 @@ read_ws_futures_sportsline <- function() {
 
   x <- xml2::read_html(url)
   y <- x %>%
-    html_nodes("futures-table") %>%
+    html_nodes("futures-table ember-view") %>%
     html_table() %>%
     purrr::pluck(1)
   y %>%

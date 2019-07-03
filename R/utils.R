@@ -35,8 +35,11 @@ lahman_teams <- function() {
   out <- Lahman::Teams %>%
     filter(yearID == max(yearID)) %>%
     select(teamID, name) %>%
-    mutate(team = standardize_team_name(x = name)) %>%
-    separate(col = team, into = c("city", "nickname"), sep = " ")
+    mutate(teamID = as.character(teamID),
+           team = standardize_team_name(x = name)) %>%
+    tidyr::separate(col = team, into = c("city", "nickname"), sep = " ") %>%
+    mutate(canonical_name = paste(city, nickname)) %>%
+    tibble::as_tibble()
   out
 }
 
