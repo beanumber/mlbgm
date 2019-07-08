@@ -6,16 +6,19 @@ url <- "https://www.spotrac.com/mlb/contracts/"
 
 x <- xml2::read_html(url) %>%
   html_nodes("table") %>%
-  html_table()
+  html_table() %>%
+  purrr::pluck(1)
 
-contracts <- x[[1]] %>%
+contracts <- x %>%
   rename(End = `Free Agent`) %>%
-  mutate(Age = parse_number(Age),
-         Yrs = parse_number(Yrs),
-         Dollars = parse_number(Dollars),
-         AAV = parse_number(Average),
-         Year_1 = End - Yrs,
-         Year_N = End - 1) %>%
+  mutate(
+    Dollars = parse_number(Dollars),
+    AAV = parse_number(Average),
+    Year_1 = End - Yrs,
+    Year_N = End - 1,
+    teamID = stringr::str_sub(Team, 1, 3),
+    teamID = standardize_team_ids(teamID)
+  ) %>%
   select(-Average) %>%
   filter(End > 0)
 

@@ -69,3 +69,40 @@ standardize_team_name <- function(x, ...) {
     gsub(" city", "-city", .) %>%
     gsub(" bay", "-bay", .)
 }
+
+#' @rdname lahman_teams
+#' @export
+
+mlb_teams <- function() {
+  Lahman::Teams %>%
+    filter(yearID == 2017) %>%
+    mutate(teamID = as.character(teamID)) %>%
+    select(name, teamID, franchID, teamIDBR, teamIDretro) %>%
+    mutate(teamID_alt = case_when(
+      teamID == "CHA" ~ "CWS",
+      teamID == "KCA" ~ "KC",
+      teamID == "MIA" ~ "FLO",
+      teamID == "SDN" ~ "SD",
+      teamID == "SFN" ~ "SF",
+      teamID == "TBA" ~ "TB",
+      teamID == "WAS" ~ "WSH",
+      TRUE ~ teamID),
+      canonical_name = standardize_team_name(name)
+    )
+}
+
+#' @rdname lahman_teams
+#' @export
+
+standardize_team_ids <- function (x) {
+  lkup <- mlb_teams()
+
+  out <- tibble::enframe(trimws(x)) %>%
+    left_join(select(lkup, teamID, canonical_name), by = c("value" = "teamID")) %>%
+    left_join(select(lkup, teamID, teamIDBR), by = c("value" = "teamIDBR")) %>%
+    left_join(select(lkup, teamID, teamIDretro), by = c("value" = "teamIDretro")) %>%
+    left_join(select(lkup, teamID, teamID_alt), by = c("value" = "teamID_alt")) %>%
+    mutate(teamID = ifelse(is.na(teamID), teamID.x, teamID),
+           teamID = ifelse(is.na(teamID), teamID.y, teamID))
+  return(out$teamID)
+}

@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, message=FALSE}
 library(tidyverse)
 library(mlbgm)
 ```
@@ -76,4 +76,14 @@ rwar
 
 ```{r}
 futures <- read_ws_probs()
+futures
+ggplot(futures, aes(x = reorder(teamID, ws_prob_normalized), 
+                    y = ws_prob_normalized, 
+                    color = teamID, fill = teamID)) +
+  geom_col() + 
+  scale_fill_manual(values = mlb_lahman_palette()) + 
+  scale_color_manual(values = mlb_lahman_palette(2)) + 
+  scale_x_discrete(NULL) +
+  scale_y_continuous("Mean Probability of Winning the World Series") + 
+  labs(caption = "Source: many different betting markets")
 ```

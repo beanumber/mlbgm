@@ -3,11 +3,17 @@
 \name{lahman_teams}
 \alias{lahman_teams}
 \alias{standardize_team_name}
+\alias{mlb_teams}
+\alias{standardize_team_ids}
 \title{Match names}
 \usage{
 lahman_teams()
 
 standardize_team_name(x, ...)
+
+mlb_teams()
+
+standardize_team_ids(x)
 }
 \arguments{
 \item{x}{character vector of team names}

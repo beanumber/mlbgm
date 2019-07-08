@@ -23,4 +23,7 @@ test_that("futures work", {
   futures <- read_ws_probs()
   expect_equal(nrow(futures), 30)
   expect_equal(sum(futures$ws_prob_normalized), 1)
+
+  x <- unique(trimws(stringr::str_sub(contracts$Team, 1, 3)))
+  standardize_team_ids(x)
 })
