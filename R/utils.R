@@ -57,6 +57,7 @@ standardize_team_name <- function(x, ...) {
     gsub("montreal", "washington", .) %>%
     gsub("expos", "nationals", .) %>%
     gsub("st\\. ", "st-", .) %>%
+    gsub("st ", "st-", .) %>%
     gsub("ny ", "new-york ", .) %>%
     gsub("la ", "los-angeles ", .) %>%
     gsub("chi ", "chicago ", .) %>%

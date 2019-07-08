@@ -2,15 +2,30 @@
 % Please edit documentation in R/vegas.R
 \name{futures}
 \alias{futures}
-\alias{current_probs}
+\alias{read_ws_probs}
+\alias{read_ws_futures_vegasinsider}
 \alias{glm_ws}
 \alias{predict_wins}
 \alias{read_ws_futures_oddsshark}
 \alias{read_ws_futures_actionnetwork}
 \alias{read_ws_futures_sportsline}
-\title{Fetch current Vegas odds}
+\alias{read_ws_futures_sportsoddshistory}
+\title{Fetch current Vegas futures and collect them}
+\source{
+\url{http://www.vegasinsider.com/mlb/odds/futures/}
+
+\url{https://www.oddsshark.com/mlb/odds/futures}
+
+\url{https://www.actionnetwork.com/mlb/future}
+
+\url{https://www.sportsline.com/mlb/futures/}
+
+\url{https://www.sportsoddshistory.com/mlb-odds/live-world-series-odds/}
+}
 \usage{
-current_probs()
+read_ws_probs()
+
+read_ws_futures_vegasinsider()
 
 glm_ws(from = 1998, ...)
 
@@ -21,6 +36,8 @@ read_ws_futures_oddsshark()
 read_ws_futures_actionnetwork()
 
 read_ws_futures_sportsline()
+
+read_ws_futures_sportsoddshistory()
 }
 \arguments{
 \item{from}{Year from which to draw historical data}
@@ -32,5 +49,10 @@ read_ws_futures_sportsline()
 \item{probs}{a vector of probabilities}
 }
 \description{
-Fetch current Vegas odds
+Fetch current Vegas futures and collect them
+}
+\examples{
+\dontrun{
+read_ws_probs()
+}
 }

@@ -1,0 +1,79 @@
+---
+title: "What do GMs think about?"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{mlbgm}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(tidyverse)
+library(mlbgm)
+```
+
+# Using the right colors
+
+```{r}
+mlb_pal_1 <- mlb_palette()
+mlb_pal_2 <- mlb_palette(2)
+```
+
+# Using the right names
+
+```{r}
+lahman_teams()
+forbes %>%
+  pull(Team) %>%
+  unique() %>%
+  standardize_team_name()
+```
+
+# Cross-referencing IDs
+
+```{r}
+id_bp
+id_chadwick
+```
+
+# The value of the franchise
+
+```{r}
+ggplot(forbes, aes(x = Year, y = Value, color = Team)) + 
+  geom_point() + 
+  geom_line() + 
+  geom_smooth(se = FALSE) + 
+  scale_color_manual(values = mlb_pal_1) + 
+  scale_y_continuous("Francise Value (Millions of USD)") + 
+  scale_x_continuous(NULL) + 
+  coord_trans(y = "log10") + 
+  labs(title = "MLB Franchise Valuations",
+       caption = "Source: Forbes")
+```
+
+# Major League Service and contracts
+
+```{r}
+contracts
+mls
+```
+
+# WAR
+
+```{r}
+rwar
+```
+
+# Las Vegas futures
+
+
+```{r}
+futures <- read_ws_probs()
+```

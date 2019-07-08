@@ -18,3 +18,9 @@ test_that("extrapolate works", {
   expect_true("yearID" %in% names(df))
 
 })
+
+test_that("futures work", {
+  futures <- read_ws_probs()
+  expect_equal(nrow(futures), 30)
+  expect_equal(sum(futures$ws_prob_normalized), 1)
+})
