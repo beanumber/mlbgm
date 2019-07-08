@@ -1,3 +1,9 @@
+globalVariables(c(".", ".fitted", ".se.fit", "BetOnline", "L", "Odds", "Team", "V1", "V2", "W", "canonical_name", "city",
+                  "decimal_odds", "effect", "estimate", "franchID", "future", "logit", "mean_future", "name",
+                  "nickname", "sportsbook", "team", "teamID", "teamID.x", "teamID.y", "teamIDBR", "teamID_alt",
+                  "teamIDretro", "temp", "term", "timestamp", "wins_pred", "wpct_hat", "wpct_hat_rescale",
+                  "ws_prob", "y_hat_old", "yearID"))
+
 #' Fetch current Vegas futures and collect them
 #' @name futures
 #' @export

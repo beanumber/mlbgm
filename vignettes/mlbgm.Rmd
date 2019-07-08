@@ -87,3 +87,29 @@ ggplot(futures, aes(x = reorder(teamID, ws_prob_normalized),
   scale_y_continuous("Mean Probability of Winning the World Series") + 
   labs(caption = "Source: many different betting markets")
 ```
+
+# Player profile
+
+```{r}
+beltran <- rwar %>%
+  filter(playerId == "beltrca01") %>%
+  mutate(teamID = standardize_team_ids(teamId)) %>%
+  select(playerId, yearId, stintId, teamID, PA, rWAR) %>%
+  left_join(Lahman::Salaries, 
+            by = c("playerId" = "playerID", "yearId" = "yearID", "teamID")) 
+
+# %>%
+#   group_by(playerId, yearId) %>%
+#   summarize(num_teams = n(), 
+#             rwar = sum(rWAR), 
+#             earnings = sum(salary, na.rm = TRUE))
+
+ggplot(beltran, aes(x = yearId, color = teamID, fill = teamID)) + 
+  geom_col(aes(y = -salary/4e6)) + 
+  geom_col(aes(y = rWAR)) + 
+  geom_smooth(aes(y = rWAR), se = FALSE) + 
+  geom_smooth(aes(y = -salary/4e6), se = FALSE) + 
+  scale_y_continuous("Wins above Replacement") + 
+  scale_color_manual(values = mlb_lahman_palette(1)) + 
+  scale_fill_manual(values = mlb_lahman_palette(2))
+```

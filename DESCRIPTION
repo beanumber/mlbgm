@@ -3,7 +3,7 @@ Title: tools for baseball player valuation
 Version: 0.0.0.9013
 Authors@R: person("Benjamin S.", "Baumer", email = "ben.baumer@gmail.com", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
-Depends: R (>= 3.0)
+Depends: R (>= 3.5)
 Imports:
   broom,
   downloader,
@@ -25,5 +25,6 @@ RoxygenNote: 6.1.1
 Suggests: 
     knitr,
     testthat,
-    rmarkdown
+    rmarkdown,
+    tidyverse
 VignetteBuilder: knitr
