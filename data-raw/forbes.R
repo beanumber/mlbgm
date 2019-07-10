@@ -6,7 +6,9 @@ library(here)
 
 forbes <- read_csv(here("data-raw", "forbes.csv")) %>%
   mutate(Team = gsub(" of Anaheim", "", Team),
-         Team = gsub("Florida Marlins", "Miami Marlins", Team))
+         Team = gsub("Florida Marlins", "Miami Marlins", Team)) %>%
+  left_join(select(lkup_teams(), teamcolors_name, teamID), by = c("Team" = "teamcolors_name")) %>%
+  arrange(desc(Year), desc(Value))
 
 save(forbes, file = "data/forbes.rda", compress = "xz")
 
