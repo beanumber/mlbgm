@@ -2,7 +2,8 @@
 % Please edit documentation in R/vegas.R
 \name{futures}
 \alias{futures}
-\alias{read_ws_probs}
+\alias{summarize_futures}
+\alias{read_ws_futures}
 \alias{read_ws_futures_vegasinsider}
 \alias{glm_ws}
 \alias{predict_wins}
@@ -23,7 +24,9 @@
 \url{https://www.sportsoddshistory.com/mlb-odds/live-world-series-odds/}
 }
 \usage{
-read_ws_probs()
+summarize_futures(.data)
+
+read_ws_futures()
 
 read_ws_futures_vegasinsider()
 
@@ -40,6 +43,8 @@ read_ws_futures_sportsline()
 read_ws_futures_sportsoddshistory()
 }
 \arguments{
+\item{.data}{A \code{\link[tibble]{tibble}} returned by \code{\link{read_ws_futures}}}
+
 \item{from}{Year from which to draw historical data}
 
 \item{...}{currently ignored}
@@ -53,6 +58,7 @@ Fetch current Vegas futures and collect them
 }
 \examples{
 \dontrun{
-read_ws_probs()
+x <- read_ws_futures()
+summarize_futures(x)
 }
 }

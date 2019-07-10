@@ -1,49 +1,36 @@
-#' MLB Team colors
-#' @export
-#' @param ... arguments passed to \code{\link[teamcolors]{league_palette}}
-#' @examples
-#' mlb_palette() != mlb_palette(2)
+globalVariables(c("standardized_name", "lahman_name", "league"))
 
-mlb_palette <- function(...) {
-  teamcolors::league_palette("mlb", ...)
-}
-
-#' @export
-#' @rdname mlb_palette
-
-mlb_lahman_palette <- function(...) {
-  pal <- teamcolors::league_palette("mlb", ...) %>%
-    tibble::enframe() %>%
-    mutate(name = standardize_team_name(name))
-  lkup <- Lahman::Teams %>%
-    filter(yearID == max(yearID)) %>%
-    select(teamID, name) %>%
-    mutate(name = standardize_team_name(name))
-  merged <- left_join(pal, lkup)
-  out <- merged$value
-  names(out) <- merged$teamID
-  out
-}
-
-
-
-#' Match names
+#' Utilities for dealing with MLB Teams
 #' @import dplyr
+#' @return a \code{\link[tibble]{tibble}} with one row for each team
 #' @export
 
-lahman_teams <- function() {
+lkup_teams <- function() {
   out <- Lahman::Teams %>%
     filter(yearID == max(yearID)) %>%
-    select(teamID, name) %>%
+    select(teamID, lahman_name = name, franchID, teamIDBR, teamIDretro) %>%
     mutate(teamID = as.character(teamID),
-           team = standardize_team_name(x = name)) %>%
-    tidyr::separate(col = team, into = c("city", "nickname"), sep = " ") %>%
-    mutate(canonical_name = paste(city, nickname)) %>%
+           franchID = as.character(franchID),
+           standardized_name = standardize_team_name(x = lahman_name),
+           teamID_alt = case_when(
+             teamID == "CHA" ~ "CWS",
+             teamID == "KCA" ~ "KC",
+             teamID == "MIA" ~ "FLO",
+             teamID == "SDN" ~ "SD",
+             teamID == "SFN" ~ "SF",
+             teamID == "TBA" ~ "TB",
+             teamID == "WAS" ~ "WSH",
+             TRUE ~ teamID)
+           ) %>%
+    tidyr::separate(col = standardized_name, into = c("city", "nickname"), sep = " ", remove = FALSE) %>%
+    left_join(mutate(teamcolors::teamcolors, standardized_name = standardize_team_name(name)), by = "standardized_name") %>%
+    rename(teamcolors_name = name) %>%
+    select(-league) %>%
     tibble::as_tibble()
   out
 }
 
-#' @rdname lahman_teams
+#' @rdname lkup_teams
 #' @param x character vector of team names
 #' @param ... currently ignored
 #' @export
@@ -70,35 +57,14 @@ standardize_team_name <- function(x, ...) {
     gsub(" bay", "-bay", .)
 }
 
-#' @rdname lahman_teams
+#' @rdname lkup_teams
 #' @export
 
-mlb_teams <- function() {
-  Lahman::Teams %>%
-    filter(yearID == 2017) %>%
-    mutate(teamID = as.character(teamID)) %>%
-    select(name, teamID, franchID, teamIDBR, teamIDretro) %>%
-    mutate(teamID_alt = case_when(
-      teamID == "CHA" ~ "CWS",
-      teamID == "KCA" ~ "KC",
-      teamID == "MIA" ~ "FLO",
-      teamID == "SDN" ~ "SD",
-      teamID == "SFN" ~ "SF",
-      teamID == "TBA" ~ "TB",
-      teamID == "WAS" ~ "WSH",
-      TRUE ~ teamID),
-      canonical_name = standardize_team_name(name)
-    )
-}
-
-#' @rdname lahman_teams
-#' @export
-
-standardize_team_ids <- function (x) {
-  lkup <- mlb_teams()
+standardize_team_ids <- function(x) {
+  lkup <- lkup_teams()
 
   out <- tibble::enframe(trimws(x)) %>%
-    left_join(select(lkup, teamID, canonical_name), by = c("value" = "teamID")) %>%
+    left_join(select(lkup, teamID, standardized_name), by = c("value" = "teamID")) %>%
     left_join(select(lkup, teamID, teamIDBR), by = c("value" = "teamIDBR")) %>%
     left_join(select(lkup, teamID, teamIDretro), by = c("value" = "teamIDretro")) %>%
     left_join(select(lkup, teamID, teamID_alt), by = c("value" = "teamID_alt")) %>%

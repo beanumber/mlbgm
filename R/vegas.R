@@ -6,28 +6,17 @@ globalVariables(c(".", ".fitted", ".se.fit", "BetOnline", "L", "Odds", "Team", "
 
 #' Fetch current Vegas futures and collect them
 #' @name futures
+#' @param .data A \code{\link[tibble]{tibble}} returned by \code{\link{read_ws_futures}}
 #' @export
 #' @examples
 #' \dontrun{
-#' read_ws_probs()
+#' x <- read_ws_futures()
+#' summarize_futures(x)
 #' }
 
-read_ws_probs <- function() {
-  # collect futures
-  a <- read_ws_futures_actionnetwork()
-#  b <- read_ws_futures_oddsshark()
-  c <- read_ws_futures_sportsoddshistory()
-  d <- read_ws_futures_vegasinsider()
+summarize_futures <- function(.data) {
 
-  combined <- bind_rows(a, c, d) %>%
-    mutate(canonical_name = standardize_team_name(team)) %>%
-    left_join(select(lahman_teams(), canonical_name, teamID), by = c("canonical_name")) %>%
-    left_join(select(lahman_teams(), city, teamID), by = c("canonical_name" = "city")) %>%
-    mutate(teamID = ifelse(is.na(teamID.x), teamID.y, teamID.x)) %>%
-    select(-teamID.x, -teamID.y) %>%
-    filter(future > 0)
-
-  teams <- combined %>%
+  teams <- .data %>%
     group_by(teamID) %>%
     summarize(
       timestamp = last(timestamp),
@@ -49,6 +38,28 @@ read_ws_probs <- function() {
   return(teams)
 
 }
+
+
+#' @rdname futures
+#' @export
+
+read_ws_futures <- function() {
+  # collect futures
+  a <- read_ws_futures_actionnetwork()
+  b <- read_ws_futures_oddsshark()
+  c <- read_ws_futures_sportsoddshistory()
+  d <- read_ws_futures_vegasinsider()
+
+  bind_rows(a, b, c, d) %>%
+    mutate(standardized_name = standardize_team_name(team)) %>%
+    left_join(select(lkup_teams(), standardized_name, teamID), by = c("standardized_name")) %>%
+    left_join(select(lkup_teams(), city, teamID), by = c("standardized_name" = "city")) %>%
+    mutate(teamID = ifelse(is.na(teamID.x), teamID.y, teamID.x)) %>%
+    select(-teamID.x, -teamID.y) %>%
+    filter(future > 0)
+
+}
+
 
 #' @rdname futures
 #' @export

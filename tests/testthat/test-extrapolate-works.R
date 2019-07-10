@@ -20,10 +20,27 @@ test_that("extrapolate works", {
 })
 
 test_that("futures work", {
-  futures <- read_ws_probs()
+  futures <- read_ws_futures() %>%
+    summarize_futures()
   expect_equal(nrow(futures), 30)
   expect_equal(sum(futures$ws_prob_normalized), 1)
 
   x <- unique(trimws(stringr::str_sub(contracts$Team, 1, 3)))
   standardize_team_ids(x)
+})
+
+test_that("teams work", {
+  x <- lkup_teams()
+  expect_is(x, "tbl_df")
+  expect_equal(nrow(x), 30)
+
+  expect_length(mlb_pal(), 30)
+  expect_named(mlb_pal())
+  expect_is(class(names(mlb_pal())), "character")
+
+  any(mlb_pal(1) == mlb_pal(2))
+
+  expect_error(mlb_pal("lahman_name"), "non-numeric")
+  expect_equal(mlb_pal(names = "lahman_name"), mlb_pal(1, names = "lahman_name"))
+  expect_equivalent(mlb_pal(names = "lahman_name"), mlb_pal(1, names = "teamcolors_name"))
 })

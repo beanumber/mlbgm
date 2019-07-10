@@ -22,14 +22,15 @@ library(mlbgm)
 # Using the right colors
 
 ```{r}
-mlb_pal_1 <- mlb_palette()
-mlb_pal_2 <- mlb_palette(2)
+mlb_pal()
+mlb_pal(2)
+mlb_pal(names = "lahman_name")
 ```
 
 # Using the right names
 
 ```{r}
-lahman_teams()
+lkup_teams()
 forbes %>%
   pull(Team) %>%
   unique() %>%
@@ -50,7 +51,7 @@ ggplot(forbes, aes(x = Year, y = Value, color = Team)) +
   geom_point() + 
   geom_line() + 
   geom_smooth(se = FALSE) + 
-  scale_color_manual(values = mlb_pal_1) + 
+  scale_color_mlb(names = "teamcolors_name") + 
   scale_y_continuous("Francise Value (Millions of USD)") + 
   scale_x_continuous(NULL) + 
   coord_trans(y = "log10") + 
@@ -75,14 +76,16 @@ rwar
 
 
 ```{r}
-futures <- read_ws_probs()
+futures <- read_ws_futures() %>%
+  summarize_futures()
 futures
+
 ggplot(futures, aes(x = reorder(teamID, ws_prob_normalized), 
                     y = ws_prob_normalized, 
                     color = teamID, fill = teamID)) +
   geom_col() + 
-  scale_fill_manual(values = mlb_lahman_palette()) + 
-  scale_color_manual(values = mlb_lahman_palette(2)) + 
+  scale_fill_mlb() + 
+  scale_color_mlb(2) + 
   scale_x_discrete(NULL) +
   scale_y_continuous("Mean Probability of Winning the World Series") + 
   labs(caption = "Source: many different betting markets")
@@ -110,6 +113,6 @@ ggplot(beltran, aes(x = yearId, color = teamID, fill = teamID)) +
   geom_smooth(aes(y = rWAR), se = FALSE) + 
   geom_smooth(aes(y = -salary/4e6), se = FALSE) + 
   scale_y_continuous("Wins above Replacement") + 
-  scale_color_manual(values = mlb_lahman_palette(1)) + 
-  scale_fill_manual(values = mlb_lahman_palette(2))
+  scale_color_mlb() + 
+  scale_fill_mlb(2)
 ```
