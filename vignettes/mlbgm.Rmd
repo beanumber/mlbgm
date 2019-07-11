@@ -40,8 +40,15 @@ forbes %>%
 # Cross-referencing IDs
 
 ```{r}
-id_bp
-id_chadwick
+lkup_players
+lkup_players %>%
+  summarize(
+    N = n(),
+    mlbam = n_distinct(mlbam_id),
+    lahman = n_distinct(lahman_id),
+    retro = n_distinct(retro_id),
+    espn = n_distinct(espn_id)
+  )
 ```
 
 # The value of the franchise

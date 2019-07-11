@@ -1,43 +1,33 @@
-#' ID table from Ted Turocy's Chadwick Bureau
+#' Cross-reference Player IDs across systems
 #'
-#' A data frame contains player ID mappings
+#' A data frame containing player ID mappings
 #'
 #' @docType data
-#' @format A data frame with one row for each player and 9 columns:
+#' @format A data frame with one row for each player and 15 columns:
 #' \describe{
-#'    \item{key_person}{Ted's ID for that person}
-#'    \item{key_mlbam}{the person's MLBAM id}
-#'    \item{key_retro}{the person's Retrosheet id}
-#'    \item{key_bbref}{the person's Lahman id}
-#'    \item{key_fangraphs}{the person's FanGraphs id}
 #'    \item{name_last}{the person's last name}
 #'    \item{name_first}{the person's first name}
 #'    \item{name_given}{the person's given name}
+#'    \item{mlbam_id}{the person's MLBAM id}
+#'    \item{lahman_id}{the person's Lahman id}
+#'    \item{retro_id}{the person's Retrosheet id}
+#'    \item{bp_id}{the person's Baseball Prospectus id}
+#'    \item{davenport_id}{the person's Davenport id}
+#'    \item{fg_id}{the person's FanGraphs id}
+#'    \item{cbs_id}{the person's CBS id}
+#'    \item{espn_id}{the person's ESPN id}
+#'    \item{nfbc_id}{the person's NFBC id}
+#'    \item{yahoo_id}{the person's Yahoo id}
+#'    \item{ottoneu_id}{the person's Ottoneu id}
+#'    \item{rotowire_id}{the person's Rotowire id}
 #' }
 #'
 #' @source \url{http://chadwick-bureau.com/the-register/}
-#'
-"id_chadwick"
-
-#' ID table from Baseball-Reference.com
-#'
-#' A data frame contains player ID mappings
-#'
-#' @docType data
-#' @format A data frame with one row for each player and 31 columns:
-#' \describe{
-#'    \item{nameLast}{the person's last name}
-#'    \item{nameFirst}{the person's first name}
-#'    \item{bpId}{the person's Baseball Prospectus id}
-#'    \item{davenportId}{the person's Davenport id}
-#'    \item{mlbamId}{the person's MLBAM id}
-#'    \item{retroId}{the person's Retrosheet id}
-#' }
-#'
 #' @source \url{http://www.baseballprospectus.com/sortable/playerids/playerid_list.csv}
+#' @source \url{http://crunchtimebaseball.com/master.csv}
 #' @seealso \code{\link[Lahman]{Master}}
 #'
-"id_bp"
+"lkup_players"
 
 #' fWAR values downloaded from FanGraphs.
 #'
