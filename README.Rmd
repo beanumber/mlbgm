@@ -1,0 +1,60 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+# mlbgm
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of `mlbgm` is to streamline access to data that answers questions that Major League Baseball executives care about. These include:
+
+- How good was/is/will be that player? 
+    - Player evaluation (past performance)
+    - Player projection (future performance)
+- How good was/is/will be that team? 
+    - Team evalation and projection
+- How much will that player cost? 
+    - Salaries (past and future)
+    - Major League Serice
+- How much money are we making? 
+    - Franchise valuation and revenue
+
+## Installation
+
+You can install the development version from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("beanumber/mlbgm")
+```
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r example}
+library(mlbgm)
+lkup_teams()
+lkup_players
+```
+
+# References
+
+`mlbgm` works in conjunctions with other tools, including:
+
+- [Lahman](https://github.com/cdalzell/Lahman)
+- [baseballr](http://www.github.com/BillPetti/baseballr)
+- [statcastr](http://www.github.com/beanumber/statcastr)
+- [retro](http://www.github.com/beanumber/retro)
+
+
