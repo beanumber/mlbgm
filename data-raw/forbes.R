@@ -4,7 +4,7 @@ library(here)
 
 # https://umich.app.box.com/s/41707f0b2619c0107b8b/folder/320021767
 
-forbes <- read_csv(here("data-raw", "forbes.csv")) %>%
+forbes <- read_csv(here::here("data-raw", "forbes.csv")) %>%
   mutate(Team = gsub(" of Anaheim", "", Team),
          Team = gsub("Florida Marlins", "Miami Marlins", Team)) %>%
   left_join(select(lkup_teams(), teamcolors_name, teamID), by = c("Team" = "teamcolors_name")) %>%

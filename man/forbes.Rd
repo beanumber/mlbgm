@@ -4,7 +4,7 @@
 \name{forbes}
 \alias{forbes}
 \title{Franchise values}
-\format{An object of class \code{spec_tbl_df} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 676 rows and 8 columns.}
+\format{An object of class \code{spec_tbl_df} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 706 rows and 8 columns.}
 \usage{
 forbes
 }
