@@ -16,8 +16,10 @@
 #' mlb_pal(2, names = "city")
 
 mlb_pal <- function(which = 1, names = "teamID") {
-  out <- teamcolors::league_pal("mlb", which)
-  names(out) <- pull(lkup_teams(), names)
+  x <- lkup_teams()
+  z <- which(names(x) == "primary")
+  out <- dplyr::pull(x, z - 1 + which)
+  names(out) <- pull(x, names)
   out
 }
 
