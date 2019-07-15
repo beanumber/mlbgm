@@ -53,6 +53,7 @@ lkup_players
 `mlbgm` works in conjunctions with other tools, including:
 
 - [Lahman](https://github.com/cdalzell/Lahman)
+- [teamcolors](https://www.github.com/beanumber/teamcolors)
 - [baseballr](http://www.github.com/BillPetti/baseballr)
 - [statcastr](http://www.github.com/beanumber/statcastr)
 - [retro](http://www.github.com/beanumber/retro)
