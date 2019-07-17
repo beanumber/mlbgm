@@ -101,3 +101,7 @@
 #' @docType data
 #' @source \url{https://www.spotrac.com/mlb/contracts/}
 "contracts"
+
+#' Comparable Players
+#' @docType data
+"comps_hypercube"
