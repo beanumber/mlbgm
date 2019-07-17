@@ -10,7 +10,9 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.width = 7.2,
+  fig.height = 7.2
 )
 ```
 
@@ -97,6 +99,15 @@ ggplot(futures, aes(x = reorder(teamID, ws_prob_normalized),
   scale_y_continuous("Mean Probability of Winning the World Series") + 
   labs(caption = "Source: many different betting markets")
 ```
+
+# Comparable players
+
+```{r, fig.width=10}
+some_comps <- comps("beltrca01", 2005)
+summary(some_comps)
+plot(some_comps, 7)
+```
+
 
 # Player profile
 

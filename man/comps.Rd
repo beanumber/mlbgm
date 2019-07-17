@@ -3,8 +3,10 @@
 \name{comps}
 \alias{comps}
 \alias{comps_universe}
-\alias{comps_model}
+\alias{comps_mod_rwar}
+\alias{comps_mod_salary}
 \alias{plot.comps}
+\alias{plot_comps_universe}
 \title{Modeling future performance}
 \usage{
 comps(lahman_id, horizon = as.numeric(format(Sys.Date(), "\%Y")),
@@ -12,9 +14,13 @@ comps(lahman_id, horizon = as.numeric(format(Sys.Date(), "\%Y")),
 
 comps_universe(lahman_id)
 
-comps_model(.data)
+comps_mod_rwar(.data)
+
+comps_mod_salary(.data)
 
 \method{plot}{comps}(x, horizon_years = 5, ...)
+
+plot_comps_universe(x, ...)
 }
 \arguments{
 \item{lahman_id}{Lahman ID of the player}
@@ -45,4 +51,5 @@ comps("wrighda03")
 comps("wrighda03", 2009)
 comps_universe(c("piazzmi01", "wrighda03", "mcgwima01"))
 plot(comps("wrighda03", 2009))
+plot_comps_universe(comps("wrighda03", 2009))
 }

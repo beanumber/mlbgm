@@ -67,7 +67,8 @@ comps <- function(lahman_id,
       unique() %>%
       comps_universe()
   )
-  out$comps_model <- comps_model(out$comps_universe)
+  out$mod_rwar <- comps_mod_rwar(out$comps_universe)
+  out$mod_salary <- comps_mod_salary(out$comps_universe)
   class(out) <- append("comps", class(out))
   out
 }
@@ -115,6 +116,13 @@ comps_universe <- function(lahman_id) {
               RAA_bat = sum(rRAA_bat), RAA_field = sum(rRAA_field),
               RAA_pitch = sum(rRAA_pitch),
               rWAR = sum(rWAR)) %>%
+    group_by(playerId) %>%
+    mutate(mlb_exp = rank(yearId)) %>%
+    ungroup() %>%
+    left_join(
+      select(Lahman::Salaries, playerId = playerID, yearId = yearID, salary),
+      by = c("playerId", "yearId")
+    ) %>%
     left_join(
       select(Lahman::Master, playerId = playerID, birthYear),
       by = "playerId"
@@ -143,10 +151,57 @@ comps_universe <- function(lahman_id) {
 #' @param .data Passed to the data argument of \code{\link[stats]{lm}}
 #' @export
 
-comps_model <- function(.data) {
+comps_mod_rwar <- function(.data) {
 
   lm(rWAR ~ poly(age, 7) + quantile, data = .data)
 
+}
+
+#' @rdname comps
+#' @export
+
+comps_mod_salary <- function(.data) {
+
+  lm(log(salary) ~ factor(mlb_exp) + rWAR + poly(age, 2) + factor(yearId), data = .data)
+
+}
+
+#' @rdname comps
+#' @export
+#' @examples
+#' predict(comps("beltrca01", 2005))
+
+predict.comps <- function(object, n = 20, ...) {
+
+  tmp <- object$comps_universe %>%
+    filter(playerId == object$lahman_id)
+
+  .newdata <- tibble::tibble(
+    playerId = object$lahman_id,
+    yearId = object$horizon:(object$horizon + n),
+    age = object$horizon_age:(object$horizon_age + n),
+    mlb_exp = age - mean(tmp$age - tmp$mlb_exp),
+    quantile = unique(tmp$quantile)
+  )
+
+  out <- newdata %>%
+    broom::augment(object$mod_rwar, newdata = .) %>%
+    rename(rWAR_hat = .fitted)
+
+  pred_salary <- newdata %>%
+    augment_future(object$mod_salary, newdata = .)
+
+  newdata <- object$comps_universe %>%
+    filter(playerId == object$lahman_id) %>%
+    bind_rows(data.frame(playerId = "machama01",
+                         yearId = 2019:2032,
+                         age = 27:40,
+                         mlb_exp = 8:21,
+                         rWAR = NA,
+                         quantile = max_quantile)) %>%
+    broom::augment(mod_rwar, newdata = .) %>%
+    rename(rWAR_hat = .fitted) %>%
+    select(-.se.fit)
 }
 
 #' @rdname comps
@@ -194,7 +249,7 @@ plot.comps <- function(x, horizon_years = 5, ...) {
     ungroup() %>%
     modelr::data_grid(age = modelr::seq_range(age, by = 1),
                       quantile = levels(quantile)) %>%
-    mutate(.fitted = predict(x$comps_model, newdata = .))
+    mutate(.fitted = predict(x$mod_rwar, newdata = .))
 
   max_quantile <- tail(levels(x$comps_universe$quantile), 1)
 
@@ -210,4 +265,39 @@ plot.comps <- function(x, horizon_years = 5, ...) {
     annotate("text", x = mean(next_contract$age), y = mean(next_contract$.fitted) / 2,
              label = paste(round(sum(next_contract$.fitted), 1), "rWAR"))
 
+}
+
+
+#' @rdname comps
+#' @export
+#' @examples
+#' plot_comps_universe(comps("wrighda03", 2009))
+
+plot_comps_universe <- function(x, ...) {
+  this_decile <- x$comps_universe %>%
+    filter(playerId == x$lahman_id) %>%
+    pull(quantile) %>%
+    unique()
+
+  these_comps <- x$comps_universe %>%
+    filter(quantile == this_decile) %>%
+    group_by(playerId) %>%
+    summarize(N = n(),
+              tRAA_bat = sum(RAA_bat),
+              tRAA_field = sum(RAA_field)
+    )
+  ggplot(data = these_comps, aes(x = tRAA_bat, y = tRAA_field)) +
+    geom_point() +
+    ggrepel::geom_label_repel(
+      data = sample_n(these_comps, 20),
+      aes(label = playerId)) +
+    ggrepel::geom_label_repel(
+      data = filter(these_comps, playerId == x$lahman_id),
+      aes(label = playerId), color = "dodgerblue") +
+    scale_y_continuous("Runs Above Average, Fielding") +
+    scale_x_continuous("Runs Above Average, Batting") +
+    labs(title = "Quantile Comparable Players",
+         subtitle = paste(nrow(these_comps),
+                          "players. By Batting and Fielding contributions to rWAR"),
+         caption = "Source: Baseball-Reference.com")
 }

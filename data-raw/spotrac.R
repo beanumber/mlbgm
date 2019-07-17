@@ -20,6 +20,7 @@ contracts <- x %>%
     teamID = standardize_team_ids(teamID)
   ) %>%
   select(-Average) %>%
-  filter(End > 0)
+  filter(End > 0) %>%
+  as_tibble()
 
 save(contracts, file = "data/contracts.rda", compress = "xz")

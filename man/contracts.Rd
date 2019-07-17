@@ -4,7 +4,7 @@
 \name{contracts}
 \alias{contracts}
 \title{Contracts}
-\format{An object of class \code{data.frame} with 352 rows and 11 columns.}
+\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 350 rows and 11 columns.}
 \source{
 \url{https://www.spotrac.com/mlb/contracts/}
 }
