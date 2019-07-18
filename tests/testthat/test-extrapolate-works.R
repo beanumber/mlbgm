@@ -7,10 +7,10 @@ test_that("extrapolate works", {
 
   mod <- lm(salary ~ factor(yearID), data = salaries)
 
-  efx <- pull_effects(mod, "yearID")
-  expect_gt(nrow(pull_effects(mod, "yearID")), 0)
+  efx <- filter_effect(mod, "yearID")
+  expect_gt(nrow(efx), 0)
   expect_true("yearID" %in% names(efx))
-  expect_s3_class(mod_efx <- extrapolate_effects(mod, "yearID"), "lm")
+  expect_s3_class(mod_efx <- mod_effect(mod, "yearID"), "lm")
   expect_true(any(grepl("yearID", names(coef(mod_efx)))))
 
   X <- data.frame(yearID = 2019)

@@ -1,9 +1,11 @@
 globalVariables(c("AB", "BB", "BFP", "HBP", "IBB", "InnOuts", "PA", "POS",
-                  "RAA_bat", "RAA_field", "RAA_pitch", "SF", "SH",
+                  "RAA_bat", "RAA_field", "RAA_pitch", "SF", "SH", "salary",
                   "WAR_PA", "age", "birthYear", "comps_hypercube", "cum_BFP",
                   "cum_PA", "decile", "dist", "head", "nameFirst", "nameLast",
                   "playerID", "playerId", "quantile", "rRAA_bat", "rRAA_field",
-                  "rRAA_pitch", "rWAR", "rwar", "tTPA", "tWAR", "this_player", "yearId"))
+                  "rRAA_pitch", "rWAR", "rwar", "tTPA", "tWAR", "this_player", "yearId",
+                  "value", "age.x", "age.y", "rWAR_hat", "value_hat", "salary_hat",
+                  "type", "predicted", "tRAA_bat", "tRAA_field", "mlb_exp"))
 
 #' Modeling future performance
 #' @param lahman_id Lahman ID of the player
@@ -169,6 +171,9 @@ comps_mod_salary <- function(.data) {
 }
 
 #' @rdname comps
+#' @param object A \code{\link{comps}} object
+#' @param n number of years in advanced to predict. Capped by 24 years of MLB
+#' experience.
 #' @export
 #' @examples
 #' predict(comps("beltrca01", 2005))
@@ -367,7 +372,6 @@ dollars_per_rwar <- function() {
 plot.comps <- function(x, horizon_years = 5, ...) {
 
   plot_data <- x$comps_universe %>%
-    filter(!is.na(salary)) %>%
     left_join(
       select(dollars_per_rwar(), yearId, dollars_per_rwar),
       by = "yearId"

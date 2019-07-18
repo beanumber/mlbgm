@@ -45,6 +45,11 @@ dollars_per_rwar()
 
 \item{.data}{Passed to the data argument of \code{\link[stats]{lm}}}
 
+\item{object}{A \code{\link{comps}} object}
+
+\item{n}{number of years in advanced to predict. Capped by 24 years of MLB
+experience.}
+
 \item{...}{currently ignored}
 
 \item{x}{A \code{comps} object}

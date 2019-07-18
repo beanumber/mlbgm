@@ -52,7 +52,7 @@ augment_future <- function(mod, newdata, col_name, ...) {
 
   newdata$temp <- newdata[, col_name] %>%
     purrr::as_vector()
-  newdata[, col_name] <- factor(as_vector(last_effect[, col_name]))
+  newdata[, col_name] <- factor(purrr::as_vector(last_effect[, col_name]))
   newdata <- newdata %>%
     dplyr::mutate(y_hat_old = predict(mod, newdata = .)) %>%
     dplyr::left_join(
