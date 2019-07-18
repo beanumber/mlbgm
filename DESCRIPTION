@@ -9,6 +9,7 @@ Imports:
   downloader,
   dplyr,
   ggplot2,
+  ggrepel,
   gtools,
   Lahman,
   modelr,

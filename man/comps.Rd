@@ -5,8 +5,12 @@
 \alias{comps_universe}
 \alias{comps_mod_rwar}
 \alias{comps_mod_salary}
-\alias{plot.comps}
+\alias{predict.comps}
+\alias{plot_rwar}
 \alias{plot_comps_universe}
+\alias{plot_salary}
+\alias{dollars_per_rwar}
+\alias{plot.comps}
 \title{Modeling future performance}
 \usage{
 comps(lahman_id, horizon = as.numeric(format(Sys.Date(), "\%Y")),
@@ -18,9 +22,17 @@ comps_mod_rwar(.data)
 
 comps_mod_salary(.data)
 
-\method{plot}{comps}(x, horizon_years = 5, ...)
+\method{predict}{comps}(object, n = 20, ...)
+
+plot_rwar(x, horizon_years = 5, ...)
 
 plot_comps_universe(x, ...)
+
+plot_salary(x, horizon_years = 5, ...)
+
+dollars_per_rwar()
+
+\method{plot}{comps}(x, horizon_years = 5, ...)
 }
 \arguments{
 \item{lahman_id}{Lahman ID of the player}
@@ -33,11 +45,11 @@ plot_comps_universe(x, ...)
 
 \item{.data}{Passed to the data argument of \code{\link[stats]{lm}}}
 
+\item{...}{currently ignored}
+
 \item{x}{A \code{comps} object}
 
 \item{horizon_years}{How many years in advance do you want to forecast?}
-
-\item{...}{currently ignored}
 }
 \description{
 Modeling future performance
@@ -50,6 +62,10 @@ comps("piazzmi01", 1995)
 comps("wrighda03")
 comps("wrighda03", 2009)
 comps_universe(c("piazzmi01", "wrighda03", "mcgwima01"))
-plot(comps("wrighda03", 2009))
+predict(comps("beltrca01", 2005))
+plot_rwar(comps("wrighda03", 2009))
 plot_comps_universe(comps("wrighda03", 2009))
+plot_salary(comps("wrighda03", 2009))
+dollars_per_rwar()
+plot(comps("wrighda03", 2009))
 }

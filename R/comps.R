@@ -162,7 +162,9 @@ comps_mod_rwar <- function(.data) {
 
 comps_mod_salary <- function(.data) {
 
-  lm(log(salary) ~ factor(mlb_exp) + rWAR + poly(age, 2) + factor(yearId), data = .data)
+  .data %>%
+    filter(salary > 0) %>%
+    lm(log(salary) ~ factor(mlb_exp) + rWAR + poly(age, 2) + factor(yearId), data = .)
 
 }
 
@@ -172,36 +174,35 @@ comps_mod_salary <- function(.data) {
 #' predict(comps("beltrca01", 2005))
 
 predict.comps <- function(object, n = 20, ...) {
+  max_mlb_exp <- object$mod_salary$xlevels %>%
+    purrr::pluck("factor(mlb_exp)") %>%
+    readr::parse_integer() %>%
+    max()
 
   tmp <- object$comps_universe %>%
     filter(playerId == object$lahman_id)
 
-  .newdata <- tibble::tibble(
+  hypothetical <- tibble::tibble(
     playerId = object$lahman_id,
     yearId = object$horizon:(object$horizon + n),
     age = object$horizon_age:(object$horizon_age + n),
-    mlb_exp = age - mean(tmp$age - tmp$mlb_exp),
+    mlb_exp = age - max(tmp$age - tmp$mlb_exp),
     quantile = unique(tmp$quantile)
-  )
+  ) %>%
+    filter(mlb_exp <= max_mlb_exp)
 
-  out <- newdata %>%
+  pred_rwar <- hypothetical %>%
     broom::augment(object$mod_rwar, newdata = .) %>%
-    rename(rWAR_hat = .fitted)
-
-  pred_salary <- newdata %>%
-    augment_future(object$mod_salary, newdata = .)
-
-  newdata <- object$comps_universe %>%
-    filter(playerId == object$lahman_id) %>%
-    bind_rows(data.frame(playerId = "machama01",
-                         yearId = 2019:2032,
-                         age = 27:40,
-                         mlb_exp = 8:21,
-                         rWAR = NA,
-                         quantile = max_quantile)) %>%
-    broom::augment(mod_rwar, newdata = .) %>%
-    rename(rWAR_hat = .fitted) %>%
+    rename(rWAR = .fitted) %>%
     select(-.se.fit)
+
+  pred_salary <- pred_rwar %>%
+    augment_future(object$mod_salary, newdata = ., col_name = "yearId") %>%
+    mutate(salary_hat = exp(.fitted)) %>%
+    rename(rWAR_hat = rWAR) %>%
+    select(-.fitted)
+
+  pred_salary
 }
 
 #' @rdname comps
@@ -211,9 +212,9 @@ predict.comps <- function(object, n = 20, ...) {
 #' @export
 #' @import ggplot2
 #' @examples
-#' plot(comps("wrighda03", 2009))
+#' plot_rwar(comps("wrighda03", 2009))
 
-plot.comps <- function(x, horizon_years = 5, ...) {
+plot_rwar <- function(x, horizon_years = 5, ...) {
 
   z <- x$comps_universe %>%
     pull(age) %>%
@@ -299,5 +300,121 @@ plot_comps_universe <- function(x, ...) {
     labs(title = "Quantile Comparable Players",
          subtitle = paste(nrow(these_comps),
                           "players. By Batting and Fielding contributions to rWAR"),
+         caption = "Source: Baseball-Reference.com")
+}
+
+#' @rdname comps
+#' @export
+#' @examples
+#' plot_salary(comps("wrighda03", 2009))
+
+plot_salary <- function(x, horizon_years = 5, ...) {
+  this_player <- x$comps_universe %>%
+    filter(playerId == x$lahman_id)
+
+  newdata <- predict(x) %>%
+    rename(salary = salary_hat)
+
+  ggplot(data = x$comps_universe, aes(x = mlb_exp, y = salary)) +
+    geom_jitter(width = 0.1, alpha = 0.1) +
+    geom_point(data = this_player, color = "dodgerblue") +
+    geom_line(data = this_player, color = "dodgerblue") +
+    geom_line(data = newdata, color = "red") +
+    scale_y_continuous("USD", labels = scales::dollar) +
+    scale_x_continuous("Years of Major League Experience") +
+    labs(title = paste0(horizon_years, "-year salary projection for ", x$q$nameFirst, " ", x$q$nameLast, ", starting in ", x$horizon),
+         subtitle = paste("Based on", length(unique(x$comps_universe$playerId)), "comparable players since", min(x$comps_universe$yearId)),
+         caption = "Source: Baseball-Reference.com")
+}
+
+#' @rdname comps
+#' @export
+#' @examples
+#' dollars_per_rwar()
+
+dollars_per_rwar <- function() {
+  past <- rwar %>%
+    group_by(playerId, yearId) %>%
+    summarize(rWAR = sum(rWAR)) %>%
+    full_join(
+      Lahman::Salaries %>%
+        group_by(playerId = playerID, yearId = yearID) %>%
+        summarize(salary = sum(salary, na.rm = TRUE)),
+      by = c("playerId", "yearId")) %>%
+    group_by(yearId) %>%
+    summarize(num_players = n_distinct(playerId),
+              rWAR = sum(rWAR, na.rm = TRUE),
+              salary = sum(as.numeric(salary), na.rm = TRUE)) %>%
+    mutate(dollars_per_rwar = salary / rWAR)
+
+  mod <- lm(dollars_per_rwar ~ yearId, data = filter(past, salary > 0))
+
+  out <- broom::augment(mod, newdata = data.frame(yearId = 2017:2040)) %>%
+    select(-.se.fit) %>%
+    full_join(past, by = "yearId") %>%
+    mutate(dollars_per_rwar = ifelse(is.na(dollars_per_rwar), .fitted, dollars_per_rwar),
+           dollars_per_rwar = ifelse(dollars_per_rwar == 0, .fitted, dollars_per_rwar)) %>%
+    select(-.fitted) %>%
+    arrange(yearId)
+  out
+}
+
+#' @rdname comps
+#' @export
+#' @examples
+#' plot(comps("wrighda03", 2009))
+
+plot.comps <- function(x, horizon_years = 5, ...) {
+
+  plot_data <- x$comps_universe %>%
+    filter(!is.na(salary)) %>%
+    left_join(
+      select(dollars_per_rwar(), yearId, dollars_per_rwar),
+      by = "yearId"
+    ) %>%
+    mutate(value = rWAR * dollars_per_rwar)
+
+  z <- x$comps_universe %>%
+    filter(age >= 15, age <= 50) %>%
+    pull(age) %>%
+    range()
+
+  ys <- seq(z[1], z[2], by = 1) %>%
+    tibble::enframe(value = "age") %>%
+    mutate(yearId = age + x$horizon - x$horizon_age) %>%
+    filter(yearId %% 5 == 0)
+
+  this_player <- plot_data %>%
+    filter(playerId == x$lahman_id) %>%
+    select(playerId, yearId, age, value, salary, value) %>%
+    full_join(predict(x), by = c("playerId", "yearId")) %>%
+    left_join(
+      select(dollars_per_rwar(), yearId, dollars_per_rwar),
+      by = "yearId"
+    ) %>%
+    mutate(age = ifelse(is.na(age.x), age.y, age.x),
+           value_hat = rWAR_hat * dollars_per_rwar,
+           net_value = value - salary,
+           net_value_hat = value_hat - salary_hat,
+           salary = -salary,
+           salary_hat = -salary_hat) %>%
+    select(playerId, yearId, age, matches("(value|salary)")) %>%
+    tidyr::gather(key = "type", value = "value", -playerId, -yearId, -age) %>%
+    mutate(predicted = grepl("_hat", type),
+           type = gsub("_hat", "", type))
+
+
+  ggplot(plot_data, aes(x = age, y = value)) +
+    geom_jitter(width = 0.1, alpha = 0.1, color = "darkgray") +
+    geom_jitter(aes(y = -salary), width = 0.1, alpha = 0.1, color = "pink") +
+    geom_vline(xintercept = x$horizon_age, color = "black", linetype = 2) +
+    geom_point(data = filter(this_player, predicted == FALSE), aes(color = type)) +
+    geom_line(data = this_player, aes(color = type, linetype = predicted)) +
+    geom_text(data = ys, aes(label = yearId, y = max(plot_data$value)), color = "darkgray") +
+    scale_x_continuous("Age") +
+    scale_y_continuous("Value (USD)", labels = scales::dollar) +
+    scale_color_manual(values = c("net_value" = "purple", "salary" = "red", value = "blue")) +
+    labs(title = paste0("Value projection for ", x$q$nameFirst, " ", x$q$nameLast, ", starting in ", x$horizon),
+         subtitle = paste("Based on", length(unique(plot_data$playerId)), "comparable players since", min(plot_data$yearId)),
          caption = "Source: Baseball-Reference.com")
 }
