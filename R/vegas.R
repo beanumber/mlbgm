@@ -143,7 +143,7 @@ read_ws_futures_oddsshark <- function() {
   out <- y[idx] %>%
     matrix(ncol = num_books, byrow = TRUE) %>%
     tibble::as_tibble()
-  names(out) <- book_names[c(1:5, 7, 9, 11, 12)]
+  names(out) <- book_names[c(1:5, 7:10)]
 
   teams <- x %>%
     html_nodes(css = "div.op-team-data-wrapper:nth-child(2)") %>%
