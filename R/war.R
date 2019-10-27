@@ -2,19 +2,11 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' test <- model_frame()
+#' test <- war_frame(1982)
 #' }
 
-model_frame <- function() {
+war_frame <- function(year = 2017, ...) {
   comps_hypercube %>%
-    group_by(playerID) %>%
-    arrange(playerID, yearID) %>%
-    mutate(
-      # need to fix this if they miss a year
-      rWAR_1 = dplyr::lag(rWAR),
-      rWAR_2 = dplyr::lag(rWAR, 2),
-      rWAR_3 = dplyr::lag(rWAR, 3)
-    ) %>%
-    ungroup()
+    filter(yearID < year)
 }
 
