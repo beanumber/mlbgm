@@ -5,7 +5,8 @@ globalVariables(c("AB", "BB", "BFP", "HBP", "IBB", "InnOuts", "PA", "POS",
                   "playerID", "playerId", "quantile", "rRAA_bat", "rRAA_field",
                   "rRAA_pitch", "rWAR", "rwar", "tTPA", "tWAR", "this_player", "yearId",
                   "value", "age.x", "age.y", "rWAR_hat", "value_hat", "salary_hat",
-                  "type", "predicted", "tRAA_bat", "tRAA_field", "mlb_exp"))
+                  "type", "predicted", "tRAA_bat", "tRAA_field", "mlb_exp",
+                  "BB_b", "BB_p", "SO", "SO_b", "SO_p"))
 
 #' Modeling future performance
 #' @param lahman_id Lahman ID of the player
@@ -79,28 +80,44 @@ comps_hypercube_build <- function() {
 
   bat <- Lahman::Batting %>%
     group_by(playerID, yearID) %>%
-    summarize(PA = sum(AB + BB + IBB + HBP + SF + SH))
+    summarize(PA = sum(AB + BB + IBB + HBP + SF + SH, na.rm = TRUE),
+              BB_b = sum(BB, na.rm = TRUE),
+              SO_b = sum(SO, na.rm = TRUE))
 
   pitch <- Lahman::Pitching %>%
     group_by(playerID, yearID) %>%
-    summarize(BFP = sum(BFP))
+    summarize(BFP = sum(BFP),
+              BB_p = sum(BB, na.rm = TRUE),
+              SO_p = sum(SO, na.rm = TRUE))
 
   field <- Lahman::Fielding %>%
     group_by(playerID, yearID, POS) %>%
     summarize(InnOuts = sum(InnOuts)) %>%
     tidyr::spread(key = "POS", value = "InnOuts")
 
+  value <- rwar %>%
+    group_by(playerID = playerId, yearID = yearId) %>%
+    summarise(rWAR = sum(rWAR, na.rm = TRUE),
+              rRAA_bat = sum(rRAA_bat, na.rm = TRUE),
+              rRAA_field = sum(rRAA_field, na.rm = TRUE),
+              rRAA_pitch = sum(rRAA_pitch, na.rm = TRUE))
+
   bat %>%
     left_join(pitch, by = c("playerID", "yearID")) %>%
     left_join(field, by = c("playerID", "yearID")) %>%
+    left_join(value, by = c("playerID", "yearID")) %>%
     left_join(select(Lahman::Master, playerID, birthYear), by = "playerID") %>%
     mutate(age = yearID - birthYear) %>%
     select(-birthYear) %>%
     tidyr::replace_na(list(PA = 0, BFP = 0)) %>%
     mutate(cum_PA = cumsum(PA),
-           cum_BFP = cumsum(BFP)) %>%
-    # simplify for now
-    select(playerID, yearID, age, cum_PA, cum_BFP)
+           cum_BFP = cumsum(BFP),
+           cum_so_bb_b = cumsum(SO_b) / cumsum(BB_b),
+           cum_so_bb_p = cumsum(SO_p) / cumsum(BB_p),
+           cum_rwar = cumsum(rWAR),
+           cum_raa_b = cumsum(rRAA_bat),
+           cum_raa_p = cumsum(rRAA_pitch),
+           cum_raa_f = cumsum(rRAA_field))
 }
 
 #' @rdname comps
