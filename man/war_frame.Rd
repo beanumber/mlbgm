@@ -2,15 +2,21 @@
 % Please edit documentation in R/war.R
 \name{war_frame}
 \alias{war_frame}
+\alias{war_frame_pitchers}
+\alias{war_frame_batters}
 \title{Build a data frame suitable for projecting WAR}
 \usage{
-war_frame(year = 2017, ...)
+war_frame(year = max(Lahman::Batting$yearID), ...)
+
+war_frame_pitchers(year = max(Lahman::Pitching$yearID), ...)
+
+war_frame_batters(year = max(Lahman::Batting$yearID), ...)
 }
 \description{
 Build a data frame suitable for projecting WAR
 }
 \examples{
 \dontrun{
-test <- war_frame(2016)
+test <- war_frame(1982)
 }
 }

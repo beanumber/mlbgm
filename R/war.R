@@ -5,8 +5,24 @@
 #' test <- war_frame(1982)
 #' }
 
-war_frame <- function(year = 2017, ...) {
+war_frame <- function(year = max(Lahman::Batting$yearID), ...) {
   comps_hypercube %>%
-    filter(yearID < year)
+    filter(yearID <= year)
+}
+
+#' @rdname war_frame
+#' @export
+
+war_frame_pitchers <- function(year = max(Lahman::Pitching$yearID), ...) {
+  comps_hypercube %>%
+    filter(yearID <= year, cum_PA < cum_BFP)
+}
+
+#' @rdname war_frame
+#' @export
+
+war_frame_batters <- function(year = max(Lahman::Batting$yearID), ...) {
+  comps_hypercube %>%
+    filter(yearID <= year, cum_PA >= cum_BFP)
 }
 

@@ -134,6 +134,8 @@ comps_hypercube_build <- function() {
       cum_raa_f = cumsum(tidyr::replace_na(dplyr::lag(rRAA_field, 1), 0)),
       cum_so_bb_b = cum_so_b / cum_bb_b,
       cum_so_bb_p = cum_so_p / cum_bb_p,
+      cum_rwar_max = cummax(tidyr::replace_na(dplyr::lag(rWAR, 1), 0)),
+      cum_rwar_avg = cummean(tidyr::replace_na(dplyr::lag(rWAR, 1), 0)),
     ) %>%
     ungroup()
 }

@@ -4,7 +4,7 @@
 \name{comps_hypercube}
 \alias{comps_hypercube}
 \title{Comparable Players}
-\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 97992 rows and 37 columns.}
+\format{An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 97992 rows and 39 columns.}
 \usage{
 comps_hypercube
 }
