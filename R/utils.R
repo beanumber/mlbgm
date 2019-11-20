@@ -89,7 +89,7 @@ lm_split <- function(data, form, i, var_name, equal_width = TRUE, ...) {
   if (equal_width == TRUE) {
     #calculates splits for even variable bin width
     data$splits <- cut(data[[var_name]], i, include.lowest = TRUE)
-  } else if (equal_width == FALSE){
+  } else {
     #calculates splits for even number of obs
     data$splits <- cut_number(data[[var_name]], i)
   }
@@ -103,4 +103,5 @@ lm_split <- function(data, form, i, var_name, equal_width = TRUE, ...) {
   #creates model summaries for each data frame and adds a variable to show splits
   glanceframe <- mapframe %>%
     map_dfr(glance, .id = paste(var_name, "splits", sep = "_"))
+  return(glanceframe)
 }
