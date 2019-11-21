@@ -1,5 +1,7 @@
 #' Build a data frame suitable for projecting WAR
 #' @export
+#' @param year Predict until this year
+#' @param ... Can pass logicals for the filter function
 #' @examples
 #' \dontrun{
 #' test <- war_frame(1982)

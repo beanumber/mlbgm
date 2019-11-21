@@ -72,3 +72,36 @@ standardize_team_ids <- function(x) {
            teamID = ifelse(is.na(teamID), teamID.y, teamID))
   return(out$teamID)
 }
+
+#' Running a linear model on data frame splits
+#' @importFrom broom glance
+#' @importFrom purrr map map_dfr
+#' @param data Dataset for modeling
+#' @param form Formula to be passed to the linear model
+#' @param i Number of cuts to split the data into
+#' @param var_name Variable to base the cuts on
+#' @param equal_width If TRUE, cuts the data based on even widths of value; if FALSE, each cut will have an approximately equal number of observations
+#' @param ... Passes lm() parameters to allow user to handle NA values
+#' @examples lm_split(comps_hypercube, "rWAR ~ cum_rwar",i = 4, "cum_rwar", na.omit = TRUE)
+#' @export
+
+lm_split <- function(data, form, i, var_name, equal_width = TRUE, ...) {
+  if (equal_width == TRUE) {
+    #calculates splits for even variable bin width
+    data$splits <- cut(data[[var_name]], i, include.lowest = TRUE)
+  } else {
+    #calculates splits for even number of obs
+    data$splits <- cut_number(data[[var_name]], i)
+  }
+
+  #splits data frame based on new split variable
+  splitframe <- split(data, data[["splits"]])
+
+  #runs the model on the list of split data frames
+  mapframe <- map(splitframe, lm, formula = form)
+
+  #creates model summaries for each data frame and adds a variable to show splits
+  glanceframe <- mapframe %>%
+    map_dfr(glance, .id = paste(var_name, "splits", sep = "_"))
+  return(glanceframe)
+}

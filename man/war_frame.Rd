@@ -12,6 +12,11 @@ war_frame_pitchers(year = max(Lahman::Pitching$yearID), ...)
 
 war_frame_batters(year = max(Lahman::Batting$yearID), ...)
 }
+\arguments{
+\item{year}{Predict until this year}
+
+\item{...}{Can pass logicals for the filter function}
+}
 \description{
 Build a data frame suitable for projecting WAR
 }
