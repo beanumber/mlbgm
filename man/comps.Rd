@@ -13,8 +13,12 @@
 \alias{plot.comps}
 \title{Modeling future performance}
 \usage{
-comps(lahman_id, horizon = as.numeric(format(Sys.Date(), "\%Y")),
-  max_dist = 500, max_num = 10000)
+comps(
+  lahman_id,
+  horizon = as.numeric(format(Sys.Date(), "\%Y")),
+  max_dist = 500,
+  max_num = 10000
+)
 
 comps_universe(lahman_id)
 

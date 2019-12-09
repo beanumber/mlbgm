@@ -28,7 +28,7 @@ comps <- function(lahman_id,
                   max_dist = 500,
                   max_num = 1e4) {
 
-  x <- comps_hypercube %>%
+  x <- mlbgm::comps_hypercube %>%
     filter(yearID <= horizon)
   q <- x %>%
     filter(playerID == lahman_id, yearID < horizon) %>%
@@ -98,7 +98,7 @@ comps_hypercube_build <- function() {
     summarize(InnOuts = sum(InnOuts)) %>%
     tidyr::spread(key = "POS", value = "InnOuts")
 
-  value <- rwar %>%
+  value <- mlbgm::rwar %>%
     group_by(playerID = playerId, yearID = yearId) %>%
     summarise(rWAR = sum(rWAR, na.rm = TRUE),
               rRAA_bat = sum(rRAA_bat, na.rm = TRUE),
@@ -148,7 +148,7 @@ comps_hypercube_build <- function() {
 comps_universe <- function(lahman_id) {
   x <- lahman_id %>%
     tibble::enframe(value = "playerId") %>%
-    inner_join(rwar, by = "playerId") %>%
+    inner_join(mlbgm::rwar, by = "playerId") %>%
     group_by(playerId, yearId) %>%
     summarize(num_stints = n(),
               PA = sum(PA), BFP = sum(BFP, na.rm = TRUE),

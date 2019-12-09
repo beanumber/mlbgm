@@ -20,18 +20,19 @@ scale_color_mlb(which = 1, names = "teamID", ...)
 \code{\link{lkup_teams}} that you want to use as the names of the colors.
 This will need to match the data in the variable you want to map to color.}
 
-\item{...}{Arguments passed on to \code{ggplot2::scale_fill_manual}
-\describe{
-  \item{values}{a set of aesthetic values to map data values to. If this
+\item{...}{
+  Arguments passed on to \code{\link[ggplot2:scale_fill_manual]{ggplot2::scale_fill_manual}}
+  \describe{
+    \item{\code{values}}{a set of aesthetic values to map data values to. If this
 is a named vector, then the values will be matched based on the names.
 If unnamed, values will be matched in order (usually alphabetical) with
 the limits of the scale. Any data values that don't match will be
 given \code{na.value}.}
-  \item{aesthetics}{Character string or vector of character strings listing the
+    \item{\code{aesthetics}}{Character string or vector of character strings listing the
 name(s) of the aesthetic(s) that this scale works with. This can be useful, for
 example, to apply colour settings to the \code{colour} and \code{fill} aesthetics at the
 same time, via \code{aesthetics = c("colour", "fill")}.}
-}}
+  }}
 }
 \description{
 MLB Team colors
