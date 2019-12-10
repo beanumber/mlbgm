@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![Travis-CI Build
+Status](https://travis-ci.org/beanumber/mlbgm.svg?branch=master)](https://travis-ci.org/beanumber/mlbgm)
 <!-- badges: end -->
 
 The goal of `mlbgm` is to streamline access to data that answers
@@ -39,7 +41,7 @@ This is a basic example which shows you how to solve a common problem:
 ``` r
 library(mlbgm)
 lkup_teams()
-#> # A tibble: 30 x 16
+#> # A tibble: 30 x 19
 #>    teamID lahman_name franchID teamIDBR teamIDretro standardized_na… city 
 #>    <chr>  <chr>       <chr>    <chr>    <chr>       <chr>            <chr>
 #>  1 ARI    Arizona Di… ARI      ARI      ARI         arizona diamond… ariz…
@@ -52,10 +54,10 @@ lkup_teams()
 #>  8 CLE    Cleveland … CLE      CLE      CLE         cleveland india… clev…
 #>  9 COL    Colorado R… COL      COL      COL         colorado rockies colo…
 #> 10 DET    Detroit Ti… DET      DET      DET         detroit tigers   detr…
-#> # … with 20 more rows, and 9 more variables: nickname <chr>,
-#> #   teamID_alt <chr>, teamcolors_name <chr>, primary <chr>,
-#> #   secondary <chr>, tertiary <chr>, quaternary <chr>, division <chr>,
-#> #   logo <chr>
+#> # … with 20 more rows, and 12 more variables: nickname <chr>, teamID_alt <chr>,
+#> #   teamcolors_name <chr>, primary <chr>, secondary <chr>, tertiary <chr>,
+#> #   quaternary <chr>, division <chr>, location <chr>, mascot <chr>,
+#> #   sportslogos_name <chr>, logo <chr>
 lkup_players
 #> # A tibble: 111,692 x 15
 #>    name_last name_first name_given mlbam_id lahman_id retro_id bp_id
@@ -71,8 +73,8 @@ lkup_players
 #>  9 Ensberg   Morgan     Morgan Pa…   348563 ensbemo01 ensbm001    15
 #> 10 Everett   Adam       Jeffrey A…   276361 everead01 evera001    16
 #> # … with 111,682 more rows, and 8 more variables: davenport_id <chr>,
-#> #   fg_id <dbl>, cbs_id <dbl>, espn_id <dbl>, nfbc_id <dbl>,
-#> #   yahoo_id <dbl>, ottoneu_id <dbl>, rotowire_id <dbl>
+#> #   fg_id <dbl>, cbs_id <dbl>, espn_id <dbl>, nfbc_id <dbl>, yahoo_id <dbl>,
+#> #   ottoneu_id <dbl>, rotowire_id <dbl>
 ```
 
 # References

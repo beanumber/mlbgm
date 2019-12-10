@@ -6,7 +6,8 @@ globalVariables(c("AB", "BB", "BFP", "HBP", "IBB", "InnOuts", "PA", "POS",
                   "rRAA_pitch", "rWAR", "rwar", "tTPA", "tWAR", "this_player", "yearId",
                   "value", "age.x", "age.y", "rWAR_hat", "value_hat", "salary_hat",
                   "type", "predicted", "tRAA_bat", "tRAA_field", "mlb_exp",
-                  "BB_b", "BB_p", "SO", "SO_b", "SO_p"))
+                  "BB_b", "BB_p", "SO", "SO_b", "SO_p", "SB",
+                  "CS", "cum_so_b", "cum_so_p", "cum_bb_b", "cum_bb_p"))
 
 #' Modeling future performance
 #' @param lahman_id Lahman ID of the player
