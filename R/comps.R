@@ -296,12 +296,26 @@ predict.comps <- function(object, n = 20, ...) {
 #' @export
 
 predict_rwar <- function(x, ...) {
-  x$comps_universe %>%
+  model <- x$comps_universe %>%
     ungroup() %>%
     modelr::data_grid(age = modelr::seq_range(age, by = 1)) %>%
     broom::augment(x$mod_rwar, newdata = .) %>%
-    mutate(upper = .fitted + 1.96 * .se.fit,
-           lower = .fitted - 1.96 * .se.fit)
+    mutate(
+      upper = .fitted + 1.96 * .se.fit,
+      lower = .fitted - 1.96 * .se.fit,
+      yearID = age + (x$horizon - x$horizon_age),
+      playerID = x$lahman_id
+    )
+
+  empirical <- x$comps_universe %>%
+    group_by(age) %>%
+    summarize(
+      rWAR_25 = stats::quantile(rWAR, probs = c(0.25)),
+      rWAR_75 = stats::quantile(rWAR, probs = c(0.75))
+    )
+
+  model %>%
+    left_join(empirical, by = "age")
 }
 
 #' @rdname comps
@@ -343,8 +357,10 @@ predict_rwar <- function(x, ...) {
 
   base_plot +
     geom_line(data = grid, aes(y = .fitted), color = "red") +
-    geom_line(data = grid, aes(y = lower), color = "red", lty = 2, alpha = 0.5) +
-    geom_line(data = grid, aes(y = upper), color = "red", lty = 2, alpha = 0.5) +
+#    geom_line(data = grid, aes(y = lower), color = "red", lty = 2, alpha = 0.5) +
+#    geom_line(data = grid, aes(y = upper), color = "red", lty = 2, alpha = 0.5) +
+    geom_line(data = grid, aes(y = rWAR_25), color = "red", lty = 2, alpha = 0.5) +
+    geom_line(data = grid, aes(y = rWAR_75), color = "red", lty = 2, alpha = 0.5) +
     geom_area(data = next_contract, aes(y = .fitted), alpha = 0.5, fill = "pink") +
     annotate("text", x = mean(next_contract$age), y = mean(next_contract$.fitted) / 2,
              label = paste(round(sum(next_contract$.fitted), 1), "rWAR"))
