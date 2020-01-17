@@ -8,7 +8,7 @@
 #' }
 
 war_frame <- function(year = max(Lahman::Batting$yearID), ...) {
-  comps_hypercube %>%
+  mlbgm::comps_hypercube %>%
     filter(yearID <= year)
 }
 
@@ -16,7 +16,7 @@ war_frame <- function(year = max(Lahman::Batting$yearID), ...) {
 #' @export
 
 war_frame_pitchers <- function(year = max(Lahman::Pitching$yearID), ...) {
-  comps_hypercube %>%
+  mlbgm::comps_hypercube %>%
     filter(yearID <= year, cum_PA < cum_BFP)
 }
 
@@ -24,7 +24,7 @@ war_frame_pitchers <- function(year = max(Lahman::Pitching$yearID), ...) {
 #' @export
 
 war_frame_batters <- function(year = max(Lahman::Batting$yearID), ...) {
-  comps_hypercube %>%
+  mlbgm::comps_hypercube %>%
     filter(yearID <= year, cum_PA >= cum_BFP)
 }
 

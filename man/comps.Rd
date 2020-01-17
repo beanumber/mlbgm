@@ -2,10 +2,10 @@
 % Please edit documentation in R/comps.R
 \name{comps}
 \alias{comps}
-\alias{comps_universe}
 \alias{comps_mod_rwar}
 \alias{comps_mod_salary}
 \alias{predict.comps}
+\alias{predict_rwar}
 \alias{plot_rwar}
 \alias{plot_comps_universe}
 \alias{plot_salary}
@@ -16,17 +16,17 @@
 comps(
   lahman_id,
   horizon = as.numeric(format(Sys.Date(), "\%Y")),
-  max_dist = 500,
-  max_num = 10000
+  max_dist = 10000,
+  max_num = 100
 )
 
-comps_universe(lahman_id)
-
-comps_mod_rwar(.data)
+comps_mod_rwar(.data, lahman_id)
 
 comps_mod_salary(.data)
 
 \method{predict}{comps}(object, n = 20, ...)
+
+predict_rwar(x, ...)
 
 plot_rwar(x, horizon_years = 5, ...)
 
@@ -64,14 +64,18 @@ experience.}
 Modeling future performance
 }
 \examples{
+\dontrun{
 comps("kiescbr01")
 comps("kiescbr01", 2000)
 comps("piazzmi01")
 comps("piazzmi01", 1995)
 comps("wrighda03")
 comps("wrighda03", 2009)
-comps_universe(c("piazzmi01", "wrighda03", "mcgwima01"))
+comps("harpebr03")
+}
+\dontrun{
 predict(comps("beltrca01", 2005))
+}
 plot_rwar(comps("wrighda03", 2009))
 plot_comps_universe(comps("wrighda03", 2009))
 plot_salary(comps("wrighda03", 2009))
