@@ -315,12 +315,30 @@ predict_rwar <- function(x, ...) {
       playerID = x$lahman_id
     )
 
-  empirical <- x$comps_universe %>%
+  x$comps_universe %>%
+    filter(playerID == x$lahman_id)
+
+  tmp <- x$comps_universe %>%
     group_by(age) %>%
-    summarize(
-      rWAR_25 = stats::quantile(rWAR, probs = c(0.25), na.rm = TRUE),
-      rWAR_75 = stats::quantile(rWAR, probs = c(0.75), na.rm = TRUE)
+    mutate(
+      rWAR_ntile = percent_rank(rWAR)
     )
+  ntile <- tmp %>%
+    filter(playerID == x$lahman_id) %>%
+    pull(rWAR_ntile) %>%
+    mean(na.rm = TRUE)
+
+  ntiles <- c(rWAR_25 = 0.25, rWAR_50 = 0.50, rWAR_75 = 0.75, rWAR_player = ntile)
+
+  empirical <- tmp %>%
+    summarize(
+      rWAR_pct = list(stats::quantile(rWAR, probs = ntiles))
+    ) %>%
+    mutate(ntile = list(names(ntiles))) %>%
+    tidyr::unnest(c(rWAR_pct, ntile)) %>%
+    tidyr::pivot_wider(names_from = ntile,
+  #                     values_fn = list(rWAR_pct = length),
+                       values_from = rWAR_pct)
 
   model %>%
     left_join(empirical, by = "age")
@@ -369,9 +387,10 @@ predict_rwar <- function(x, ...) {
 #    geom_line(data = grid, aes(y = upper), color = "red", lty = 2, alpha = 0.5) +
     geom_line(data = grid, aes(y = rWAR_25), color = "red", lty = 2, alpha = 0.5) +
     geom_line(data = grid, aes(y = rWAR_75), color = "red", lty = 2, alpha = 0.5) +
-    geom_area(data = next_contract, aes(y = .fitted), alpha = 0.5, fill = "pink") +
-    annotate("text", x = mean(next_contract$age), y = mean(next_contract$.fitted) / 2,
-             label = paste(round(sum(next_contract$.fitted), 1), "rWAR"))
+    geom_line(data = grid, aes(y = rWAR_player), color = "blue", lty = 2, alpha = 0.5) +
+    geom_area(data = next_contract, aes(y = rWAR_player), alpha = 0.5, fill = "pink") +
+    annotate("text", x = mean(next_contract$age), y = mean(next_contract$rWAR_player) / 2,
+             label = paste(round(sum(next_contract$rWAR_player), 1), "rWAR"))
 
 }
 
