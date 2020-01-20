@@ -33,7 +33,7 @@ comps <- function(lahman_id,
                   max_num = 1e2) {
 
   x <- mlbgm::comps_hypercube %>%
-    filter(yearID <= horizon)
+    filter(yearID <= as.numeric(horizon))
   q <- x %>%
     filter(playerID == lahman_id, yearID < horizon) %>%
     arrange(desc(yearID)) %>%
@@ -55,9 +55,14 @@ comps <- function(lahman_id,
     ~var_name, ~weight,
     "age", 100,
     "cum_PA", 0.001,
+    "cum_BFP", 0.001,
     "speed_score_1", 100,
+    "cum_so_b", 0.01,
+    "cum_bb_b", 0.01,
+    "cum_so_p", 0.01,
+    "cum_bb_p", 0.01,
     "cum_rwar_max", 100,
-    "cum_rwar_avg", 1000,
+    "cum_rwar_avg", 500,
     "cum_rwar", 10,
   )
 
@@ -66,7 +71,7 @@ comps <- function(lahman_id,
     tidyr::pivot_longer(-matches("ID$"), names_to = "var_name", values_to = "value")
   comps_space <- x %>%
     select(playerID, yearID, space$var_name)
-  comps_df <- comps_space %>%
+  comps_df_var <- comps_space %>%
     tidyr::pivot_longer(-matches("ID$"), names_to = "var_name", values_to = "value") %>%
     left_join(space, by = "var_name") %>%
     left_join(q_long, by = "var_name") %>%
@@ -75,22 +80,24 @@ comps <- function(lahman_id,
       wgt_sq_diff = weight * sq_diff
     ) %>%
     group_by(playerID, yearID) %>%
+    mutate(
+      total_wgt_sq_diff = sum(wgt_sq_diff, na.rm = TRUE),
+      pct_wgt_sq_diff = wgt_sq_diff / total_wgt_sq_diff
+    )
+
+#  comps_df_var %>%
+#    group_by(var_name) %>%
+#    skimr::skim(pct_wgt_sq_diff)
+
+  comps_df <- comps_df_var %>%
     summarize(
-      dist = sum(wgt_sq_diff),
-#      dist_age = sum(ifelse(var_name == "age", wgt_sq_diff, 0)) / dist,
-#      dist_PA = sum(ifelse(var_name == "cum_PA", wgt_sq_diff, 0)) / dist,
-#      dist_speed = sum(ifelse(var_name == "speed_score_1", wgt_sq_diff, 0)) / dist,
-#      dist_rwar_max = sum(ifelse(var_name == "cum_rwar_max", wgt_sq_diff, 0)) / dist,
-#      dist_rwar_avg = sum(ifelse(var_name == "cum_rwar_avg", wgt_sq_diff, 0)) / dist,
-#      dist_rwar_cum = sum(ifelse(var_name == "cum_rwar", wgt_sq_diff, 0)) / dist
+      dist = sqrt(min(total_wgt_sq_diff))
     ) %>%
     arrange(dist) %>%
     filter(dist <= max_dist) %>%
     distinct(playerID, .keep_all = TRUE) %>%
     head(max_num) %>%
     left_join(comps_space, by = c("playerID", "yearID"))
-
-#  skimr::skim(ungroup(comps_df))
 
   out <- list(
     lahman_id = lahman_id,
@@ -168,8 +175,9 @@ comps_hypercube_build <- function() {
     ))
 
   speed_score_6 <- field_long %>%
+    tidyr::replace_na(list(InnOuts = 1)) %>%
     group_by(playerID, yearID) %>%
-    summarize(SS6 = stats::weighted.mean(SS6, InnOuts))
+    summarize(SS6 = stats::weighted.mean(SS6, InnOuts, na.rm = TRUE))
 
   field <- field_long %>%
     select(playerID, yearID, POS, InnOuts) %>%
@@ -310,8 +318,8 @@ predict_rwar <- function(x, ...) {
   empirical <- x$comps_universe %>%
     group_by(age) %>%
     summarize(
-      rWAR_25 = stats::quantile(rWAR, probs = c(0.25)),
-      rWAR_75 = stats::quantile(rWAR, probs = c(0.75))
+      rWAR_25 = stats::quantile(rWAR, probs = c(0.25), na.rm = TRUE),
+      rWAR_75 = stats::quantile(rWAR, probs = c(0.75), na.rm = TRUE)
     )
 
   model %>%
